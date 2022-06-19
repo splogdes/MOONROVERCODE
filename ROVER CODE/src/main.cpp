@@ -4,7 +4,6 @@
 
 const char ssid[] = "iPhone";
 const char pass[] = "12345678";
-//const int groupNumber = 0; // Set your group number to make the IP address constant - only do this on the EEERover network
 
 //Webpage to return when root is requested
 const char webpage[] = \
@@ -76,7 +75,7 @@ void handleRoot()
 {
   server.send(200, F("text/html"), webpage);
 }
-
+//sends the rest of the webpage
 void styler()
 {
   server.send(200, F("text/css"), style);
@@ -91,7 +90,7 @@ void code1()
 {
   server.send(200, F("text/javascript"), java1);
 }
-
+//the code for all the movement
 void Fleft()
 {
   digitalWrite(LDirection,HIGH);
@@ -309,7 +308,7 @@ int magnetic(){
   }
   return magnetic;
 }
-
+//Runs all of the scanning functions and works out what rock it is based off that
 void scan()
 {
   int rad,acu,IR,mag;
