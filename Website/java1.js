@@ -20,8 +20,5 @@ function Sforwards(){xhttp.open("GET", "/sf"); xhttp.send();}
 function Sbackwards(){xhttp.open("GET", "/sb"); xhttp.send();}
 function neutral(){xhttp.open("GET", "/nu"); xhttp.send();}
 function scan(){miner.open("GET", "/s");miner.send();}
-<<<<<<< HEAD
 //sets up the URI based on the function
-=======
-//sets up the URI based on the function
->>>>>>> 8269872b63b62b24e2a9df2ed354ec61890fe104
+
