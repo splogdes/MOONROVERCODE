@@ -291,6 +291,7 @@ int acoustics(){
   }
   return acoustic;
 }
+
 int magnetic(){
   int magnetic = 0;
   double MAavg = findavg(5);
