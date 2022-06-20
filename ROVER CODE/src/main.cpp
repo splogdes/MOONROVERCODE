@@ -188,9 +188,7 @@ double MAX(int pinnum){
 
 double findavg(int pinnum){
   double v[1000];
-  double Max;
-  double Min;
-  double avg;
+  double Max,Min,avg;
   Max = 0;
   Min = 1024;
   for(int i = 0; i < 1000; i++){ 
@@ -207,11 +205,8 @@ double findavg(int pinnum){
 }
 int findf(int pinnum, double avg){
   double v3[1200];
-  int pass2 = 0;
-  int f;
-  long int t3;
-  long int t4;
-  long int t5;
+  int pass2 = 0,f;
+  long int t3=0,t4=0,t5=0;
   for(int i=0;i<1200;i++){      
       v3[i]=analogRead(pinnum); 
       if(i > 0){       
@@ -236,9 +231,7 @@ int findf(int pinnum, double avg){
 // radio is pin 0 IF is pin 1
 // for IF max is less than 300 for radio is less tha  
 int IF() {
-  int pass1 = 0;
-  int pass2 = 0;
-  int IFfrequency = 0;
+  int pass1 = 0,pass2 = 0,IFfrequency = 0;
   double IFavg = findavg(1);
   for(int i = 0; i<2; i++){  
     IFfrequency = findf(1, IFavg);
@@ -268,8 +261,7 @@ int IF() {
   //RADIO
 int Radio(){
   int RAfrequency = 0;
-  double RAMaxi;
-  double RAavg = findavg(0);  
+  double RAMaxi,RAavg = findavg(0);  
   RAMaxi = MAX(0);
   if(RAMaxi > 400){  
     RAfrequency = findf(0, RAavg);
@@ -287,8 +279,7 @@ int Radio(){
 }
  //ACCOUSTIC pin a2
 int acoustics(){
-  int pass = 0;
-  int acoustic = 0;
+  int pass = 0,acoustic = 0;
   for(int i = 0; i < 10; i++){
     double ACmax = MAX(2);
     if(ACmax > 200){
