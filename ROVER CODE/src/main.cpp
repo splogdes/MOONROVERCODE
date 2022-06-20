@@ -2,8 +2,8 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 
-const char ssid[] = "iPhone";
-const char pass[] = "12345678";
+const char ssid[] = "EEERover";
+const char pass[] = "exhibition";
 
 //Webpage to return when root is requested
 const char webpage[] = \
@@ -385,7 +385,7 @@ void setup()
   }
 
   //Configure the static IP address if group number is set
-  //WiFi.config(IPAddress(192,168,0,20));
+  WiFi.config(IPAddress(192,168,0,20));
 
   // attempt to connect to WiFi network
   Serial.print(F("Connecting to WPA SSID: "));
