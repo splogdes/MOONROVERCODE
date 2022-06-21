@@ -24,6 +24,8 @@ document.onkeydown = function down(event){
         Sleft();changecolor("l");
     }else if(key_press == 39){
         Sright();changecolor("r");
+    }else if(key_press == 69){
+        reset();
     }
     last_key = key_press;
 };
