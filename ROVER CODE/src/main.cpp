@@ -295,7 +295,7 @@ int acoustics(){
 int magnetic(){
   int magnetic = 0;
   double MAavg = findavg(5);
-  if((MAavg > 700)||(MAavg < 500)){
+  if((MAavg > 1000)||(MAavg < 800)){
     magnetic = 1;
   }
   return magnetic;
