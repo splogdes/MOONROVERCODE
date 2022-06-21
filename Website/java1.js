@@ -19,5 +19,6 @@ function Sleft() {xhttp.open("GET", "/sl"); xhttp.send();}
 function Sforwards(){xhttp.open("GET", "/sf"); xhttp.send();}
 function Sbackwards(){xhttp.open("GET", "/sb"); xhttp.send();}
 function neutral(){xhttp.open("GET", "/nu"); xhttp.send();}
+function reset(){xhttp.open("GET", "/r"); xhttp.send();}
 function scan(){miner.open("GET", "/s");miner.send();}
 //sets up the URI based on the function
