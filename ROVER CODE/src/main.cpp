@@ -2,8 +2,8 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 
-const char ssid[] = "EEERover";
-const char pass[] = "exhibition";
+const char ssid[] = "iPhone";
+const char pass[] = "12345678";
 
 //Webpage to return when root is requested
 const char webpage[] = \
@@ -44,7 +44,7 @@ const char java[] = \
 "var last_key = 0;\
 function changecolor(i){document.getElementById(i).style.backgroundColor = \"rgb(93, 93, 93)\";};\
 document.onkeydown = function down(event){var key_press = event.keyCode;\
-if(key_press == last_key){}else if(key_press == 87){Fforwards();changecolor(\"f\");}else if(key_press == 83){Fbackwards();changecolor(\"b\");}else if(key_press == 65){Fleft();changecolor(\"l\");}else if(key_press == 68){Fright();changecolor(\"r\");}else if(key_press == 81){scan();changecolor(\"s\");}else if(key_press == 38){Sforwards();changecolor(\"f\");}else if(key_press == 40){Sbackwards();changecolor(\"b\");}else if(key_press == 37){Sleft();changecolor(\"l\");}else if(key_press == 39){Sright();changecolor(\"r\");}\
+if(key_press == last_key){}else if(key_press == 87){Fforwards();changecolor(\"f\");}else if(key_press == 83){Fbackwards();changecolor(\"b\");}else if(key_press == 65){Fleft();changecolor(\"l\");}else if(key_press == 68){Fright();changecolor(\"r\");}else if(key_press == 81){scan();changecolor(\"s\");}else if(key_press == 38){Sforwards();changecolor(\"f\");}else if(key_press == 40){Sbackwards();changecolor(\"b\");}else if(key_press == 37){Sleft();changecolor(\"l\");}else if(key_press == 39){Sright();changecolor(\"r\");}else if(key_press == 69){reset();}\
 last_key = key_press;};\
 document.onkeyup = function up(event){neutral();\
 for (let i = 0; i < 5; i++){document.getElementsByClassName(\"btn\")[i].style.backgroundColor = \"rgb(54, 54, 54)\";}\
@@ -64,11 +64,14 @@ function Sleft() {xhttp.open(\"GET\", \"/sl\"); xhttp.send();}\
 function Sforwards(){xhttp.open(\"GET\", \"/sf\"); xhttp.send();}\
 function Sbackwards(){xhttp.open(\"GET\", \"/sb\"); xhttp.send();}\
 function neutral(){xhttp.open(\"GET\", \"/nu\"); xhttp.send();}\
+function reset(){xhttp.open(\"GET\", \"/r\"); xhttp.send();}\
 function scan(){miner.open(\"GET\", \"/s\");miner.send();}";
 
 WiFiWebServer server(80);
 int  LDirection  = 4;
-int RDirection = 3; 
+int RDirection = 3;
+int avgacu;
+int avgmag;
 
 //Return the web page
 void handleRoot()
@@ -203,6 +206,22 @@ double findavg(int pinnum){
   avg = (Max + Min)/2;
   return avg;
 }
+
+double average(int pinnum){
+  double avg=0;
+  for(int i = 0; i < 1000; i++){ 
+    avg = avg + analogRead(pinnum); 
+  }
+  avg = avg/1000;
+  return avg;
+}
+
+void reset(){
+  avgacu = average(2);
+  avgmag = average(5);
+  server.send(200, F("text/plain"), F("reset"));
+}
+
 int findf(int pinnum, double avg){
   double v3[1200];
   int pass2 = 0,f;
@@ -232,28 +251,15 @@ int findf(int pinnum, double avg){
 // for IF max is less than 300 for radio is less tha  
 int IF() {
   int pass1 = 0,pass2 = 0,IFfrequency = 0;
-  double IFavg = findavg(1);
-  for(int i = 0; i<2; i++){  
-    IFfrequency = findf(1, IFavg);
-    if((IFfrequency<363)&&(IFfrequency>343)){
-       IFfrequency = 353;
-       pass1++;
-    }  
-    else if((IFfrequency<591)&&(IFfrequency>551)){
-      IFfrequency = 571;
-      pass2++;
-    }
-    else{
-      IFfrequency = 0;
-    }
-  }
-  if(pass1 == 2){
-    IFfrequency = 353;
-  }
-  else if(pass2 == 2){
+  double IFavg = MAX(1)/2; 
+  IFfrequency = findf(1, IFavg);
+  if((IFfrequency<363)&&(IFfrequency>343)){
+     IFfrequency = 353;
+     pass1++;
+  } else if((IFfrequency<591)&&(IFfrequency>551)){
     IFfrequency = 571;
-  }
-  else{
+    pass2++;
+  } else{
     IFfrequency = 0;
   }
   return IFfrequency;
@@ -261,10 +267,10 @@ int IF() {
   //RADIO
 int Radio(){
   int RAfrequency = 0;
-  double RAMaxi,RAavg = findavg(0);  
-  RAMaxi = MAX(0);
+  double RAMaxi = MAX(0),RAcomp;
+  RAcomp = MAX(0) - 10;
   if(RAMaxi > 400){  
-    RAfrequency = findf(0, RAavg);
+    RAfrequency = findf(0, RAcomp);
     if((RAfrequency<161)&&(RAfrequency>141)){
        RAfrequency = 151;
     }  
@@ -282,7 +288,7 @@ int acoustics(){
   int pass = 0,acoustic = 0;
   for(int i = 0; i < 10; i++){
     double ACmax = MAX(2);
-    if(ACmax > 200){
+    if(ACmax > avgacu+10){
       pass++;
     }
   }
@@ -295,7 +301,7 @@ int acoustics(){
 int magnetic(){
   int magnetic = 0;
   double MAavg = findavg(5);
-  if((MAavg > 1000)||(MAavg < 800)){
+  if((MAavg > avgmag+50)||(MAavg < avgmag-50)){
     magnetic = 1;
   }
   return magnetic;
@@ -357,8 +363,6 @@ void handleNotFound()
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, 0);
 
   Serial.begin(9600);
 
@@ -377,7 +381,7 @@ void setup()
   }
 
   //Configure the static IP address if group number is set
-  WiFi.config(IPAddress(192,168,0,20));
+  //WiFi.config(IPAddress(192,168,0,20));
 
   // attempt to connect to WiFi network
   Serial.print(F("Connecting to WPA SSID: "));
@@ -403,6 +407,7 @@ void setup()
   server.on(F("/sb"), Sbackwards);
   server.on(F("/nu"), neutral);
   server.on(F("/s"), scan);
+  server.on(F("/r"), reset);
 
   server.onNotFound(handleNotFound);
   
@@ -413,6 +418,8 @@ void setup()
 
   pinMode( LDirection , OUTPUT);  // is the mag down input high ?
   pinMode( RDirection, OUTPUT);  // IF low forwards
+  avgacu = average(2);
+  avgmag = average(5);
 }
 
 //Call the server polling function in the main loop
