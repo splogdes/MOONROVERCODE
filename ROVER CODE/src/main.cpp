@@ -2,8 +2,8 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 
-const char ssid[] = "iPhone";
-const char pass[] = "12345678";
+const char ssid[] = "EEERover";
+const char pass[] = "exhibition";
 
 //Webpage to return when root is requested
 const char webpage[] = \
