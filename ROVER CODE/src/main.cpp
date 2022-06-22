@@ -366,11 +366,6 @@ void setup()
 
   Serial.begin(9600);
 
-  //Wait 10s for the serial connection before proceeding
-  //This ensures you can see messages from startup() on the monitor
-  //Remove this for faster startup when the USB host isn't attached
- 
-
   Serial.println(F("\nStarting Web Server"));
 
   //Check WiFi shield is present
@@ -381,7 +376,7 @@ void setup()
   }
 
   //Configure the static IP address if group number is set
-  //WiFi.config(IPAddress(192,168,0,20));
+  WiFi.config(IPAddress(192,168,0,20));
 
   // attempt to connect to WiFi network
   Serial.print(F("Connecting to WPA SSID: "));
