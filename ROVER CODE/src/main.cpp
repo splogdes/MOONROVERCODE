@@ -133,10 +133,11 @@ void handleForm()
     String pasword = server.arg(0);
     Serial.println(pasword);
     digitalWrite(led, 0);
-    if(pasword == "RAWRXD"){
+    if(pasword == "KMMAPASS"){
       server.send(200, F("text/html"), webpage);
+    } else{
+      server.send(200, F("text/html"), loginpage);
     }
-    server.send(200, F("text/html"), loginpage);
   }
 }
 
