@@ -2,19 +2,28 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 
-const char ssid[] = "iPhone";
-const char pass[] = "12345678";
-String pasword;
-bool verifiyed = 0;
+const char ssid[] = "EEERover";
+const char pass[] = "exhibition";
 
 //Webpage to return when root is requested
 const char loginpage[] = \
-"<!DOCTYPE html><html><body>\
-<h1>Login Page</h1>\
-<form method=\"post\" enctype=\"application/x-www-form-urlencoded\" action=\"/postform\">\
-<input type=\"text\" name=\"hello\" value=\"world\">\
-<input type=\"submit\" value=\"Submit\">\
-</form></body></html>";
+"<!DOCTYPE html><html><head>\
+<title>LOGINPAGE</title>\
+<link href=\"stylelogin.css\" rel=\"stylesheet\">\
+</head><body>\
+<header>LOGIN PAGE</header>\
+<div class=\"pass\">\
+<form method=\"post\" enctype=\"application/x-www-form-urlencoded\" action=\"/postform\"><p>\
+Password:<input name=\"hello\" type=\"password\">\
+</p></form></div></body></html>";
+
+const char stylelogin[] = \
+"*{margin: 0;padding: 0;}\
+body {background-color: rgb(78, 78, 78);}\
+header{color: black;font-size: 70px;font-weight: 550;font-family: 'Courier New', Courier, monospace;text-align: center;text-decoration: underline;}\
+.pass {color: black;font-size: 60px;font-weight: 550;font-family: 'Courier New', Courier, monospace;text-align: center;position: absolute;top: 50%; left: 50%;-ms-transform: translateY(-50%);transform: translateY(-50%);-ms-transform: translate(-50%, -50%);transform: translate(-50%, -50%);}\
+input {background-color: rgb(101, 101, 101);font-size: 60px;border-radius: 10px;}\
+";
 
 const char webpage[] = \
 "<html><head>\
@@ -95,6 +104,11 @@ void styler()
   server.send(200, F("text/css"), style);
 }
 
+void loginstyler()
+{
+  server.send(200, F("text/css"), stylelogin);
+}
+
 void code()
 {
   server.send(200, F("text/javascript"), java);
@@ -103,14 +117,6 @@ void code()
 void code1()
 {
   server.send(200, F("text/javascript"), java1);
-}
-
-void sendrover()
-{
-  if(verifiyed == 1){
-    verifiyed = 0;
-    server.send(200, F("text/html"), webpage);
-  }
 }
 
 void handleForm()
@@ -124,7 +130,7 @@ void handleForm()
   else
   {
     digitalWrite(led, 1);
-    pasword = server.arg(0);
+    String pasword = server.arg(0);
     Serial.println(pasword);
     digitalWrite(led, 0);
     if(pasword == "RAWRXD"){
@@ -419,7 +425,7 @@ void setup()
   }
 
   //Configure the static IP address if group number is set
-  //WiFi.config(IPAddress(192,168,0,20));
+  WiFi.config(IPAddress(192,168,0,20));
 
   // attempt to connect to WiFi network
   Serial.print(F("Connecting to WPA SSID: "));
@@ -433,6 +439,7 @@ void setup()
   //Register the callbacks to respond to HTTP requests
   server.on(F("/"), handleRoot);
   server.on(F("/style.css"), styler);
+  server.on(F("/stylelogin.css"), loginstyler);
   server.on(F("/java.js"), code);
   server.on(F("/java1.js"), code1);
   server.on(F("/fr"), Fright);
