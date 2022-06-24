@@ -2,10 +2,20 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 
-const char ssid[] = "EEERover";
-const char pass[] = "exhibition";
+const char ssid[] = "iPhone";
+const char pass[] = "12345678";
+String pasword;
+bool verifiyed = 0;
 
 //Webpage to return when root is requested
+const char loginpage[] = \
+"<!DOCTYPE html><html><body>\
+<h1>Login Page</h1>\
+<form method=\"post\" enctype=\"application/x-www-form-urlencoded\" action=\"/postform\">\
+<input type=\"text\" name=\"hello\" value=\"world\">\
+<input type=\"submit\" value=\"Submit\">\
+</form></body></html>";
+
 const char webpage[] = \
 "<html><head>\
 <title>MOONROVER CONTROLS</title>\
@@ -72,11 +82,12 @@ int  LDirection  = 4;
 int RDirection = 3;
 int avgacu;
 int avgmag;
+const int led =  LED_BUILTIN;
 
 //Return the web page
 void handleRoot()
 {
-  server.send(200, F("text/html"), webpage);
+  server.send(200, F("text/html"), loginpage);
 }
 //sends the rest of the webpage
 void styler()
@@ -93,6 +104,36 @@ void code1()
 {
   server.send(200, F("text/javascript"), java1);
 }
+
+void sendrover()
+{
+  if(verifiyed == 1){
+    verifiyed = 0;
+    server.send(200, F("text/html"), webpage);
+  }
+}
+
+void handleForm()
+{
+  if (server.method() != HTTP_POST)
+  {
+    digitalWrite(led, 1);
+    server.send(405, F("text/plain"), F("Method Not Allowed"));
+    digitalWrite(led, 0);
+  }
+  else
+  {
+    digitalWrite(led, 1);
+    pasword = server.arg(0);
+    Serial.println(pasword);
+    digitalWrite(led, 0);
+    if(pasword == "RAWRXD"){
+      server.send(200, F("text/html"), webpage);
+    }
+    server.send(200, F("text/html"), loginpage);
+  }
+}
+
 //the code for all the movement
 void Fleft()
 {
@@ -363,6 +404,8 @@ void handleNotFound()
 
 void setup()
 {
+  pinMode(led, OUTPUT);
+  digitalWrite(led, 0);
 
   Serial.begin(9600);
 
@@ -376,7 +419,7 @@ void setup()
   }
 
   //Configure the static IP address if group number is set
-  WiFi.config(IPAddress(192,168,0,20));
+  //WiFi.config(IPAddress(192,168,0,20));
 
   // attempt to connect to WiFi network
   Serial.print(F("Connecting to WPA SSID: "));
@@ -403,6 +446,7 @@ void setup()
   server.on(F("/nu"), neutral);
   server.on(F("/s"), scan);
   server.on(F("/r"), reset);
+  server.on(F("/postform"), handleForm);
 
   server.onNotFound(handleNotFound);
   
