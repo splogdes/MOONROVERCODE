@@ -223,8 +223,7 @@ void neutral()
   server.send(200, F("text/plain"), F("stationary"));
 }
 
-//infrared pin a1
-//radio pin a0
+//This is the code for the IR detector.
 double MAX(int pinnum){
   double Max = 0;
   double v[600];
@@ -237,6 +236,7 @@ double MAX(int pinnum){
   return Max;
 }
 
+//Works out the average based on max and min input 
 double findavg(int pinnum){
   double v[1000];
   double Max,Min,avg;
@@ -255,6 +255,7 @@ double findavg(int pinnum){
   return avg;
 }
 
+// works our the average
 double average(int pinnum){
   double avg=0;
   for(int i = 0; i < 1000; i++){ 
@@ -264,12 +265,14 @@ double average(int pinnum){
   return avg;
 }
 
+// As somtimes the default voltage of the sensors could change to get around this code was added that could change these values
 void reset(){
   avgacu = average(2);
   avgmag = average(5);
   server.send(200, F("text/plain"), F("reset"));
 }
 
+//finds the frequency of the incoming wave
 int findf(int pinnum, double avg){
   double v3[1200];
   int pass2 = 0,f;
@@ -296,7 +299,8 @@ int findf(int pinnum, double avg){
     return f; 
 }
 // radio is pin 0 IF is pin 1
-// for IF max is less than 300 for radio is less tha  
+// for IF max is less than 300 for radio is less than
+// code for finding the Infrared freq
 int IF() {
   int pass1 = 0,pass2 = 0,IFfrequency = 0;
   double IFavg = MAX(1)/2; 
@@ -312,7 +316,7 @@ int IF() {
   }
   return IFfrequency;
 }
-  //RADIO
+ //Code for finding radio frequency
 int Radio(){
   int RAfrequency = 0;
   double RAMaxi = MAX(0),RAcomp;
@@ -331,7 +335,8 @@ int Radio(){
   }
   return RAfrequency;
 }
- //ACCOUSTIC pin a2
+
+// To detect if an acoustic signal was present  
 int acoustics(){
   int pass = 0,acoustic = 0;
   for(int i = 0; i < 10; i++){
@@ -346,6 +351,7 @@ int acoustics(){
   return acoustic;
 }
 
+// to detect if there was a magnetic field
 int magnetic(){
   int magnetic = 0;
   double MAavg = findavg(5);
@@ -463,8 +469,8 @@ void setup()
   Serial.print(F("HTTP server started @ "));
   Serial.println(static_cast<IPAddress>(WiFi.localIP()));
 
-  pinMode( LDirection , OUTPUT);  // is the mag down input high ?
-  pinMode( RDirection, OUTPUT);  // IF low forwards
+  pinMode( LDirection , OUTPUT);  
+  pinMode( RDirection, OUTPUT); 
   avgacu = average(2);
   avgmag = average(5);
 }
